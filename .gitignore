@@ -1,0 +1,8 @@
+.vscode/
+videos/
+vendor/
+composer
+composer.bat
+composer.json
+composer.lock
+composer.phar
