@@ -4,6 +4,7 @@ require_once 'db.php';
 
 $db = (new Database())->getConnection();
 
+// 确保没有输出任何内容在header之前
 $video_id = $_POST['video_id'] ?? 0;
 $selected_tags = $_POST['tags'] ?? [];
 
@@ -15,10 +16,9 @@ if (!$stmt->fetch()) {
     exit;
 }
 
-// 开始事务
-$db->beginTransaction();
-
 try {
+    $db->beginTransaction();
+    
     // 删除旧的标签关联
     $stmt = $db->prepare("DELETE FROM video_tags WHERE video_id = ?");
     $stmt->execute([$video_id]);
@@ -30,9 +30,9 @@ try {
     }
     
     $db->commit();
-    echo json_encode(['success' => true, 'redirect' => 'tags.php']);
+    echo json_encode(['success' => true]);
 } catch (Exception $e) {
     $db->rollBack();
+    // 确保错误信息也是JSON格式
     echo json_encode(['error' => '保存失败: ' . $e->getMessage()]);
 }
-?>
